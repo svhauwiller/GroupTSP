@@ -279,6 +279,75 @@ namespace TSP
             else
                 return -1D; 
         }
+        
+        private class CityNode
+        {
+            public CityNode(City c)
+            {
+                city = c;
+                visited = false;
+            }
+            
+            private City city;
+            private bool visited;
+            
+            public void SetVisited()
+            {
+                visited = true;
+            }
+            
+            public bool WasVisited()
+            {
+                return visited;
+            }
+            
+            public City GetCity()
+            {
+                return city;
+            }
+        }
+
+        private void solveGreedy()
+        {
+            ArrayList<CityNode> cityNodes = new ArrayList<CityNode>();
+            for (int i = 0; i < Cities.Length; i++)
+            {
+                CityNode n = new CityNode(Cities[i]);
+                cityNodes.add(n);
+            }
+            
+            Random rnd = new Random(5);
+            int x = rnd.NextInt() % Cities.Length;
+            
+            Route = new ArrayList();
+            
+            cityNode[x].setVisited();
+            int counter = 0;
+            CityNode current = cityNodes[x];
+            int currentIndex = -1;
+            double cost = 999999999;
+            while (counter < Cities.Length - 1)
+            {
+                cost = 999999999;
+                currentIndex = -1;
+                for (int j = 0; j < Cities.Length; j++)
+                {
+                    if (!current.WasVisited())
+                    {
+                        double tempCost = current.GetCity().costToGetTo(Cities[i]);
+                        if (tempCost < cost)
+                        {
+                            cost = tempCost;
+                            currentIndex = j;
+                        }
+                    }
+                }
+                cityNodes[currentIndex].SetVisited();
+                current = cityNodes[currentIndex];
+                Route.Add(Cities[currentIndex]);
+                counter++;
+            }
+        }
 
         /// <summary>
         ///  solve the problem.  This is the entry point for the solver when the run button is clicked
