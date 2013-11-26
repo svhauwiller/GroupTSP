@@ -280,19 +280,112 @@ namespace TSP
                 return -1D; 
         }
 
+        private class GreedyRoute
+        {
+            public GreedyRoute(City[] list)
+            {
+                Cities = list;
+                visited = new bool[Cities.Length];
+                for (int i = 0; i < visited.Length; i++)
+                    visited[i] = false;
+                r = new Random();
+                startIndex = r.Next() % Cities.Length;
+                numVisited = 1;
+                route = new ArrayList();
+            }
+
+            public void SetRoute()
+            {
+                City currentCity = Cities[startIndex];
+                route.Add(Cities[startIndex]);
+                visited[startIndex] = true;
+                City nextDest = null;
+                while (numVisited < Cities.Length)
+                {
+                    double minCost = Double.PositiveInfinity;
+                    int currentIndex = -1;
+                    for (int i = 0; i < Cities.Length; i++)
+                    {
+                        if (!visited[i])
+                        {
+                            double tempCost = currentCity.costToGetTo(Cities[i]);
+                            if (tempCost < minCost)
+                            {
+                                minCost = tempCost;
+                                nextDest = Cities[i];
+                                currentIndex = i;
+                            }
+                        }
+                    }
+                    if (minCost == Double.PositiveInfinity)
+                        break;
+                    else
+                    {
+                        route.Add(nextDest);
+                        visited[currentIndex] = true;
+                        currentCity = nextDest;
+                    }
+                }
+                if (currentCity.costToGetTo(Cities[startIndex]) == Double.PositiveInfinity)
+                    route = null;
+                else if (route.Count < Cities.Length)
+                    route = null;
+            }
+
+            public ArrayList GetRoute()
+            {
+                return route;
+            }
+
+            public void Reset()
+            {
+                startIndex = r.Next();
+            }
+
+            private Random r;
+            private City[] Cities;
+            private bool[] visited;
+            private int startIndex;
+            private int numVisited;
+            private ArrayList route;
+        }
+
         /// <summary>
         ///  solve the problem.  This is the entry point for the solver when the run button is clicked
         /// right now it just picks a simple solution. 
         /// </summary>
-        public void solveProblem()
+        public void solveProblem(string algorithm)
         {
             int x;
             Route = new ArrayList(); 
             // this is the trivial solution. 
-            for (x = 0; x < Cities.Length; x++)
+            if (algorithm == "default")
             {
-                Route.Add( Cities[Cities.Length - x -1]);
+                for (x = 0; x < Cities.Length; x++)
+                {
+                    Route.Add(Cities[Cities.Length - x - 1]);
+                }
             }
+            else if (algorithm == "greedy")
+            {
+                Route = null;
+                GreedyRoute greedy = new GreedyRoute(Cities);
+                while (Route == null)
+                {
+                    greedy.SetRoute();
+                    Route = greedy.GetRoute();
+                    if (Route == null)
+                        greedy.Reset();
+                }
+            }
+            else if (algorithm == "random")
+            {
+                for (int i = 0; i < Cities.Length; i++)
+                {
+                    Route.Add(Cities[i]);
+                }
+            }
+
             // call this the best solution so far.  bssf is the route that will be drawn by the Draw method. 
             bssf = new TSPSolution(Route);
             // update the cost of the tour. 
