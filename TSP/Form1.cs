@@ -126,7 +126,7 @@ namespace TSP
             else
             {
                 MessageBox.Show("Problem size must be an integer.");
-            };
+            }
         }
 
         private void randomProblem_Click(object sender, EventArgs e)
@@ -151,13 +151,14 @@ namespace TSP
         {
             this.reset();
 
-            CityData.solveProblem();
+            CityData.solveProblem("default");
         }
 
         private void greedyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // TODO: Add a hook into your own implementation here.
-            throw new NotImplementedException();
+            
+			CityData.solveProblem("greedy");
         }
 
         private void bBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -169,7 +170,7 @@ namespace TSP
         private void randomToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // TODO: Add a hook into your own implementation here.
-            throw new NotImplementedException();
+            CityData.solveProblem("random");
         }
 
         private void yourTSPToolStripMenuItem1_Click(object sender, EventArgs e)
