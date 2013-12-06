@@ -385,6 +385,60 @@ namespace TSP
                     Route.Add(Cities[i]);
                 }
             }
+            else if (algorithm == "custom")
+            {
+                Route.Clear();
+
+                //Add the first city
+                Route.Add(Cities[0]);
+                List<double> distFromFirstCity = new List<Double>();
+                distFromFirstCity.Add(0);
+
+                //Add the second city as the furthest city from the first
+                double maxDist = 0;
+                City maxDistCity = null;
+                int secondCityIndex = 0;
+                for (int i = 1; i < Cities.Length; i++)
+                {
+                    distFromFirstCity.Add(Cities[0].costToGetTo(Cities[i]));
+                    if (!Double.IsPositiveInfinity(distFromFirstCity[i]))
+                    {
+                        if (distFromFirstCity[i] > maxDist)
+                        {
+                            maxDist = distFromFirstCity[i];
+                            maxDistCity = Cities[i];
+                            secondCityIndex = i;
+                        }
+                    }
+                }
+                Route.Add(maxDistCity);
+
+                //Add the Third City as the furthest city from both of them that will complete the cycle
+                maxDist = 0;
+                maxDistCity = null;
+                for (int i = 1; i < Cities.Length; i++)
+                {
+                    if (i == secondCityIndex)
+                    {
+                        continue;
+                    }
+                    double distFromSecondCity = Cities[secondCityIndex].costToGetTo(Cities[i]);
+                    double distToOrigin = Cities[i].costToGetTo(Cities[0]);
+                    if (!Double.IsPositiveInfinity(distFromSecondCity) &&
+                        !Double.IsPositiveInfinity(distToOrigin))
+                    {
+                        if (Math.Min(distFromFirstCity[i], distFromSecondCity) > maxDist)
+                        {
+                            maxDist = Math.Min(distFromFirstCity[i], distFromSecondCity);
+                            maxDistCity = Cities[i];
+                        }
+                    }
+                }
+                Route.Add(maxDistCity);
+
+
+
+            }
 
             // call this the best solution so far.  bssf is the route that will be drawn by the Draw method. 
             bssf = new TSPSolution(Route);
