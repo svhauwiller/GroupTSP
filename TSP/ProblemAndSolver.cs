@@ -416,6 +416,7 @@ namespace TSP
                 //Add the Third City as the furthest city from both of them that will complete the cycle
                 maxDist = 0;
                 maxDistCity = null;
+                int thirdCityIndex = 1;
                 for (int i = 1; i < Cities.Length; i++)
                 {
                     if (i == secondCityIndex)
@@ -431,13 +432,20 @@ namespace TSP
                         {
                             maxDist = Math.Min(distFromFirstCity[i], distFromSecondCity);
                             maxDistCity = Cities[i];
+                            thirdCityIndex = i;
                         }
                     }
                 }
                 Route.Add(maxDistCity);
+                double dist = new TSPSolution(Route).costOfRoute();
+                List<int> cities = new List<int>();
+                cities.Add(0);
+                cities.Add(secondCityIndex);
+                cities.Add(thirdCityIndex);
 
-
-
+                while (Route.Count < Cities.Length) {
+                    addNextCity(cities);
+                }
             }
 
             // call this the best solution so far.  bssf is the route that will be drawn by the Draw method. 
@@ -448,6 +456,40 @@ namespace TSP
             Program.MainForm.Invalidate();
 
         }
+
+        private void addNextCity(List<int> citiesAdded) {
+            int startCity = new Random().Next(citiesAdded.Count);
+            int initialCity = startCity;
+            double min = Double.PositiveInfinity;
+            int city = -1;
+            while (min == Double.PositiveInfinity) {//Repeat if there was no match with the initially selected city
+                if (startCity >= citiesAdded.Count) {
+                    startCity = 0;
+                }
+                for (int i = 1; i < Cities.Length; i++) {
+                    if (citiesAdded.Contains(i)) {
+                        continue;
+                    }
+                    double dist1 = Cities[citiesAdded[startCity]].costToGetTo(Cities[i]);
+                    int next = citiesAdded[startCity] + 1;
+                    if (next == Cities.Length) {
+                        next = 0;
+                    }
+                    double dist2 = Cities[i].costToGetTo(Cities[next]);
+                    if (dist1 + dist2 < min) {
+                        min = dist1 + dist2;
+                        city = i;
+                    }
+                }
+                startCity++;//Step through the cities to repeat looking for a valid point to add if there wasn't one with the initially selected point
+                if (initialCity == startCity) {
+                    throw new Exception("Unable to find a valid path");
+                }
+            }
+            citiesAdded.Insert(startCity, city);
+            Route.Insert(startCity, Cities[city]);
+        }
+
         #endregion
     }
 
