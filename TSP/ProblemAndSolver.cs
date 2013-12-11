@@ -389,6 +389,49 @@ namespace TSP
             {
                 Route.Clear();
 
+                //Check for an optimal base case if the problem has 3 or less cities
+                if (Cities.Length <= 3)
+                {
+                    if (Cities.Length > 0)
+                    {
+                        Route.Add(Cities[0]);
+
+                        if (Cities.Length == 2)
+                        {
+                            Route.Add(Cities[1]);
+                        }
+                        else if (Cities.Length == 3)
+                        {
+                            double forwardDist = 0;
+                            double backwardDist = 0;
+
+                            forwardDist += Cities[0].costToGetTo(Cities[1]);
+                            forwardDist += Cities[1].costToGetTo(Cities[2]);
+                            forwardDist += Cities[2].costToGetTo(Cities[0]);
+
+                            backwardDist += Cities[0].costToGetTo(Cities[2]);
+                            backwardDist += Cities[2].costToGetTo(Cities[1]);
+                            backwardDist += Cities[1].costToGetTo(Cities[0]);
+
+                            if (forwardDist < backwardDist)
+                            {
+                                Route.Add(Cities[1]);
+                                Route.Add(Cities[2]);
+                            }
+                            else
+                            {
+                                Route.Add(Cities[2]);
+                                Route.Add(Cities[1]);
+                            }
+                        }
+                    }
+
+                    bssf = new TSPSolution(Route);
+                    Program.MainForm.tbCostOfTour.Text = " " + bssf.costOfRoute();
+                    Program.MainForm.Invalidate();
+                    return;
+                }
+
                 //Add the first city
                 Route.Add(Cities[0]);
                 List<double> distFromFirstCity = new List<Double>();
