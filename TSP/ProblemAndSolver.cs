@@ -501,36 +501,40 @@ namespace TSP
         }
 
         private void addNextCity(List<int> citiesAdded) {
-            int startCity = new Random().Next(citiesAdded.Count);
-            int initialCity = startCity;
+            int bestCity = -1;
             double min = Double.PositiveInfinity;
             int city = -1;
-            while (min == Double.PositiveInfinity) {//Repeat if there was no match with the initially selected city
-                if (startCity >= citiesAdded.Count) {
-                    startCity = 0;
-                }
+
+            for (int k = 0; k < citiesAdded.Count; k++) {
                 for (int i = 1; i < Cities.Length; i++) {
                     if (citiesAdded.Contains(i)) {
                         continue;
                     }
-                    double dist1 = Cities[citiesAdded[startCity]].costToGetTo(Cities[i]);
-                    int next = citiesAdded[startCity] + 1;
+                    double dist1 = Cities[citiesAdded[k]].costToGetTo(Cities[i]);
+                    int next = 0;
+                    if (k + 1 == citiesAdded.Count) {
+                        next = citiesAdded[0];
+                    } else {
+                        next = citiesAdded[k + 1];
+                    }
                     if (next == Cities.Length) {
                         next = 0;
                     }
                     double dist2 = Cities[i].costToGetTo(Cities[next]);
                     if (dist1 + dist2 < min) {
+                        bestCity = k;
                         min = dist1 + dist2;
                         city = i;
                     }
                 }
-                startCity++;//Step through the cities to repeat looking for a valid point to add if there wasn't one with the initially selected point
-                if (initialCity == startCity) {
-                    throw new Exception("Unable to find a valid path");
-                }
+                k++;//Step through the cities to repeat looking for a valid point to add if there wasn't one with the initially selected point
             }
-            citiesAdded.Insert(startCity, city);
-            Route.Insert(startCity, Cities[city]);
+            if (bestCity == -1){
+                throw new Exception("Could not find a possible city to add to the current path");
+            } else {
+                citiesAdded.Insert(bestCity + 1, city);
+                Route.Insert(bestCity + 1, Cities[city]);
+            }
         }
 
         #endregion
