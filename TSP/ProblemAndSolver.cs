@@ -504,26 +504,28 @@ namespace TSP
             int bestCity = -1;
             double min = Double.PositiveInfinity;
             int city = -1;
-
+            
             for (int k = 0; k < citiesAdded.Count; k++) {
                 for (int i = 1; i < Cities.Length; i++) {
-                    if (citiesAdded.Contains(i)) {
-                        continue;
-                    }
-                    double dist1 = Cities[citiesAdded[k]].costToGetTo(Cities[i]);
                     int next = 0;
                     if (k + 1 == citiesAdded.Count) {
                         next = citiesAdded[0];
                     } else {
                         next = citiesAdded[k + 1];
                     }
+                    if (citiesAdded.Contains(i)) {
+                        continue;
+                    }
+                    double pathLength = Cities[citiesAdded[k]].costToGetTo(Cities[next]);//Length of the path we are considering removing
+                    double dist1 = Cities[citiesAdded[k]].costToGetTo(Cities[i]);//Length of path from start city to the city we are considering adding to the path
                     if (next == Cities.Length) {
                         next = 0;
                     }
-                    double dist2 = Cities[i].costToGetTo(Cities[next]);
-                    if (dist1 + dist2 < min) {
+                    double dist2 = Cities[i].costToGetTo(Cities[next]);//Length of path from city we are considering adding to the next city in the path
+                    double increase = dist1 + dist2 - pathLength;
+                    if (increase < min) {
                         bestCity = k;
-                        min = dist1 + dist2;
+                        min = increase;
                         city = i;
                     }
                 }
